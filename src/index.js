@@ -36,6 +36,18 @@ const resolvers = {
       }
       links.push(link)
       return link
+    },
+    updateLink: (parent, args) => {
+      //can i reference the existing link by id query?
+      for(let i=0; i<links.length; i++){
+        if(links[i]['id'] === args.id){
+          links[i]['description'] = args.description || links[i]['description'];
+          links[i]['url'] = args.url || links[i]['url'];
+          return links[i];
+        }
+      }
+      //is returning null the typical way to communicate failure?
+      return null;
     }
   }
 }
