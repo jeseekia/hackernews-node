@@ -13,7 +13,14 @@ let idCount = links.length
 const resolvers = {
   Query: {
     info: () => `This is the API of a Hackernews Clone`,
-    feed: () => links
+    feed: () => links,
+    link: (parent, args) => {
+      for(let i=0; i<links.length; i++){
+        if(links[i]['id'] === args.id) {
+          return links[i];
+        }
+      }
+    }
   },
   Link: {
     id: (parent) => parent.id,
