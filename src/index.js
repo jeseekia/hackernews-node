@@ -48,6 +48,14 @@ const resolvers = {
       }
       //is returning null the typical way to communicate failure?
       return null;
+    },
+    deleteLink: (parent, args) => {
+      for(let i=0; i<links.length; i++){
+        if(links[i]['id'] === args.id){
+          return links.splice(i, 1)[0];
+        }
+      }
+      return null;
     }
   }
 }
