@@ -1,19 +1,15 @@
 const { ApolloServer } = require('apollo-server');
+const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
-
-let links = [{
-  id: 'link-0',
-  url: 'www.howtographql.com',
-  description: 'Fullstack tutorial for GraphQL'
-}];
-
-let idCount = links.length
+const prisma = new PrismaClient();
 
 const resolvers = {
   Query: {
     info: () => `This is the API of a Hackernews Clone`,
-    feed: () => links,
+    feed: async (parent, args, context, info) => {
+      return context.prisma.link.findMany()
+    },
     link: (parent, args) => {
       for(let i=0; i<links.length; i++){
         if(links[i]['id'] === args.id) {
@@ -28,14 +24,14 @@ const resolvers = {
     url: (parent) => parent.url
   },
   Mutation: {
-    post: (parent, args) => {
-      const link = {
-        id: `link-${idCount++}`,
-        description: args.description,
-        url: args.url
-      }
-      links.push(link)
-      return link
+    post: (parent, args, context, info) => {
+      const newLink = context.prisma.link.create({
+        data: {
+          url: args.url,
+          description: args.description
+        }
+      });
+      return newLink
     },
     updateLink: (parent, args) => {
       //can i reference the existing link by id query?
@@ -65,7 +61,10 @@ const server = new ApolloServer({
     path.join(__dirname, 'schema.graphql'),
     'utf8'
   ),
-  resolvers
+  resolvers,
+  context: {
+    prisma
+  }
 });
 
 server.listen()
