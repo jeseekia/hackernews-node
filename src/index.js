@@ -10,12 +10,12 @@ const resolvers = {
     feed: async (parent, args, context, info) => {
       return context.prisma.link.findMany()
     },
-    link: (parent, args) => {
-      for(let i=0; i<links.length; i++){
-        if(links[i]['id'] === args.id) {
-          return links[i];
+    link: async (parent, args, context, info) => {
+      return context.prisma.link.findUnique({
+        where: {
+          id: parseInt(args.id)
         }
-      }
+      })
     }
   },
   Link: {
@@ -33,25 +33,19 @@ const resolvers = {
       });
       return newLink
     },
-    updateLink: (parent, args) => {
-      //can i reference the existing link by id query?
-      for(let i=0; i<links.length; i++){
-        if(links[i]['id'] === args.id){
-          links[i]['description'] = args.description || links[i]['description'];
-          links[i]['url'] = args.url || links[i]['url'];
-          return links[i];
+    updateLink: (parent, args, context, info) => {
+      return context.prisma.link.update({
+        where: {id: parseInt(args.id)},
+        data: {
+          url: args.url,
+          description: args.description
         }
-      }
-      //is returning null the typical way to communicate failure?
-      return null;
+      })
     },
-    deleteLink: (parent, args) => {
-      for(let i=0; i<links.length; i++){
-        if(links[i]['id'] === args.id){
-          return links.splice(i, 1)[0];
-        }
-      }
-      return null;
+    deleteLink: (parent, args, context, info) => {
+      return context.prisma.link.delete({
+        where: {id: parseInt(args.id)}
+      })
     }
   }
 }
