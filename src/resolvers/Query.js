@@ -1,5 +1,11 @@
 async function feed(parent, args, context, info) {
-  return context.prisma.link.findMany()
+  const where = args.filter ? { OR: [
+    {description: { contains: args.filter}},
+    {url: { contains: args.filter}}
+  ]} : {}
+
+  const links = await context.prisma.link.findMany({where})
+  return links
 }
 
 function info() {
@@ -9,7 +15,7 @@ function info() {
 async function link(parent, args, context, info) {
   return context.prisma.link.findUnique({
     where: {
-      id: parseInt(arg.id)
+      id: parseInt(args.id)
     }
   })
 }

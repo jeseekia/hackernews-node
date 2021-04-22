@@ -22,7 +22,6 @@ async function login(parent, args, context, info) {
   if(!user) {
     throw new Error('No such user found')
   }
-  console.log(user)
 
   const valid = await bcrypt.compare(args.password, user.password)
   if (!valid) {
