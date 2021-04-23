@@ -4,7 +4,11 @@ async function feed(parent, args, context, info) {
     {url: { contains: args.filter}}
   ]} : {}
 
-  const links = await context.prisma.link.findMany({where})
+  const links = await context.prisma.link.findMany({
+    where,
+    skip: args.skip,
+    take: args.take
+  })
   return links
 }
 
